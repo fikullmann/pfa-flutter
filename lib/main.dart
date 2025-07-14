@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pfa/BubbleWrap.dart';
 import 'package:pfa/Drawer.dart';
+import 'package:pfa/TodoView.dart';
 import 'package:pfa/TodoWidget.dart';
 
 
@@ -42,39 +44,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> todoStrings = [];
-  final List<bool> _isSelected = [];
-  final todoInputController = TextEditingController();
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    todoInputController.dispose();
-    super.dispose();
-  }
-
-  void createTodo(String input) {
-    if (input.isNotEmpty) {
-      setState(() {
-        todoStrings.add(input);
-      });
-    }
-  }
-  
-  List<Widget> createTodoWidgets() {
-    List<Widget> testTodo = [];
-    for (var (i, todoString) in todoStrings.indexed) {
-      if (i >= _isSelected.length) {
-        _isSelected.add(false);
-      }
-      testTodo.add(TodoWidget(label: todoString, value: _isSelected[i], onChanged: (bool newValue) {
-        setState(() {
-          _isSelected[i] = newValue;
-        });
-      }));
-    }
-    return testTodo;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,29 +54,25 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      drawer: drawer,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: TextFormField(
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Enter your Todo',
-              ),
-              controller: todoInputController,
-              onFieldSubmitted: (String input) { createTodo(input); todoInputController.clear(); },
-            ),
-            ),
-          ] + createTodoWidgets(),
+    return DefaultTabController(length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+          bottom: const TabBar(tabs: [
+            Tab(icon: Icon(Icons.list)),
+            Tab(icon: Icon(Icons.directions_transit)),
+            Tab(icon: Icon(Icons.directions_bike)),
+          ]),
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        body: TabBarView(
+          children: [
+            TodoView(),
+            BubbleWrapView(50),
+            Column(),
+          ],
+        ), // This trailing comma makes auto-formatting nicer for build methods.
+      )
     );
   }
 }
